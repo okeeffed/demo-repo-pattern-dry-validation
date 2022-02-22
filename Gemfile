@@ -74,3 +74,6 @@ end
 gem "pry", "~> 0.14.1", :groups => [:development, :test]
 
 gem "rspec-rails", "~> 5.1", :groups => [:development, :test]
+
+gem "dry-validation", "~> 1.8"
+gem "dry-monads", "~> 1.4"
