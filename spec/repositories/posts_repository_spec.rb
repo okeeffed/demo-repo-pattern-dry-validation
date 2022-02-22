@@ -25,7 +25,6 @@ RSpec.describe PostsRepository do
         result = PostsRepository.create(title: subject.title, rating: subject.rating)
         expect(result.failure?).to eq(true)
 
-        # binding.pry
         expect(result.failure).to be_a(Dry::Validation::Result)
       end
     end
