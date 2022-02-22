@@ -1,15 +1,12 @@
 require 'dry/validation'
 require 'dry/monads'
 require 'posts_repository'
-require 'post_contract'
-
-Dry::Validation.load_extensions(:monads)
 
 class PostsController < ApplicationController
   include Dry::Monads[:result, :do]
 
   def create
-    case create_post
+    case PostsRepository.create(title: params[:title], rating: params[:rating])
     in Success(post) then render json: post, status: :ok
     in Failure(ActiveRecord::ActiveRecordError) then internal_server_error(code: '002')
     in Failure(StandardError) then internal_server_error(code: '001')
@@ -38,15 +35,6 @@ class PostsController < ApplicationController
   end
 
   private
-
-  def create_post
-    # Validate the params
-    contract = PostContract.new
-    res = yield contract.call(title: params[:title], rating: params[:rating]).to_monad
-
-    # Create the post
-    PostsRepository.create(title: params[:title], rating: params[:rating])
-  end
 
   def internal_server_error(code:)
     render json: { message: 'Internal server error', code: code }, status: :internal_server_error

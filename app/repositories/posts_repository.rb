@@ -1,10 +1,18 @@
 require 'dry/monads'
+require 'post_contract'
+
+Dry::Validation.load_extensions(:monads)
 
 class PostsRepository
   class << self
     include Dry::Monads[:result]
 
     def create(title:, rating:)
+      # Validate the params
+      contract = PostContract.new
+      validation = contract.call(title: title, rating: rating).to_monad
+      return validation unless validation.success?
+
       post = Post.new(title: title, rating: rating)
       post.save!
 

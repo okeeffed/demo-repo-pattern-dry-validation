@@ -1,9 +1,11 @@
 require 'rails_helper'
 require 'dry/monads'
+# require 'dry/validation'
 require 'post_contract'
 require 'posts_repository'
+require 'pry'
 
-Dry::Validation.load_extensions(:monads)
+# Dry::Validation.load_extensions(:monads)
 
 RSpec.describe PostsController, type: :controller do
   include Dry::Monads[:result]
@@ -136,9 +138,6 @@ RSpec.describe PostsController, type: :controller do
     context 'invalid params' do
       it 'returns 422 when there are invalid params for title' do
         res = { message: 'Unprocessable entity', errors: { title: ['must be a string'] } }
-        posts_respository_klass = class_double(PostsRepository).as_stubbed_const
-
-        expect(posts_respository_klass).to_not receive(:create)
 
         post :create, params: { title: 100, rating: 'Good' }, as: :json
         expect(response).to have_http_status(:unprocessable_entity)
@@ -147,9 +146,6 @@ RSpec.describe PostsController, type: :controller do
 
       it 'returns 422 when there are invalid params for rating' do
         res = { message: 'Unprocessable entity', errors: { rating: ['must be a string'] } }
-        posts_respository_klass = class_double(PostsRepository).as_stubbed_const
-
-        expect(posts_respository_klass).to_not receive(:create)
 
         post :create, params: { title: 'Title', rating: 100 }, as: :json
         expect(response).to have_http_status(:unprocessable_entity)
